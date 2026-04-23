@@ -1,122 +1,164 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MaterialApp(
+    home: TelaTMB(),
+    debugShowCheckedModeBanner: false,
+  ));
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
+class TelaTMB extends StatefulWidget {
   @override
-  State<MyApp> createState() => _MyAppState();
+  _TelaTMBState createState() => _TelaTMBState();
 }
 
-class _MyAppState extends State<MyApp> {
-  final TextEditingController idadeController = TextEditingController();
-  final TextEditingController pesoController = TextEditingController();
-  final TextEditingController alturaController = TextEditingController();
+class _TelaTMBState extends State<TelaTMB> {
+  TextEditingController idade = TextEditingController();
+  TextEditingController peso = TextEditingController();
+  TextEditingController altura = TextEditingController();
 
-  String genero = "masculino";
-  String atividade = "sedentario";
-
+  String genero = "M";
+  double atividade = 1.2;
   double resultado = 0;
 
-  void calcularTMB() {
-    double idade = double.tryParse(idadeController.text) ?? 0;
-    double peso = double.tryParse(pesoController.text) ?? 0;
-    double altura = double.tryParse(alturaController.text) ?? 0;
+  void calcular() {
+    double i = double.tryParse(idade.text) ?? 0;
+    double p = double.tryParse(peso.text) ?? 0;
+    double a = double.tryParse(altura.text) ?? 0;
 
-    if (genero == "masculino") {
-      resultado = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade);
+    double tmb;
+
+    if (genero == "M") {
+      tmb = 66 + (13.7 * p) + (5 * a) - (6.8 * i);
     } else {
-      resultado = 447.6 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade);
+      tmb = 655 + (9.6 * p) + (1.8 * a) - (4.7 * i);
     }
 
-    setState(() {});
+    setState(() {
+      resultado = tmb * atividade;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(title: const Text("Calculadora de Saúde")),
-        body: Padding(
-          padding: const EdgeInsets.all(20),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Calculadora de Saúde"),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.all(15),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+
               TextField(
-                controller: idadeController,
+                controller: idade,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Idade"),
+                decoration: InputDecoration(
+                  labelText: "Idade",
+                  border: OutlineInputBorder(),
+                ),
               ),
+              SizedBox(height: 10),
+
               TextField(
-                controller: pesoController,
+                controller: peso,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Peso (kg)"),
+                decoration: InputDecoration(
+                  labelText: "Peso (kg)",
+                  border: OutlineInputBorder(),
+                ),
               ),
+              SizedBox(height: 10),
+
               TextField(
-                controller: alturaController,
+                controller: altura,
                 keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: "Altura (cm)"),
+                decoration: InputDecoration(
+                  labelText: "Altura (cm)",
+                  border: OutlineInputBorder(),
+                ),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 15),
 
+              Text("Gênero"),
               Row(
                 children: [
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text("Masculino"),
-                      value: "masculino",
-                      groupValue: genero,
-                      onChanged: (value) {
-                        setState(() {
-                          genero = value!;
-                        });
-                      },
-                    ),
+                  Radio(
+                    value: "M",
+                    groupValue: genero,
+                    onChanged: (valor) {
+                      setState(() {
+                        genero = valor!;
+                      });
+                    },
                   ),
-                  Expanded(
-                    child: RadioListTile(
-                      title: const Text("Feminino"),
-                      value: "feminino",
-                      groupValue: genero,
-                      onChanged: (value) {
-                        setState(() {
-                          genero = value!;
-                        });
-                      },
-                    ),
+                  Text("Masculino"),
+
+                  Radio(
+                    value: "F",
+                    groupValue: genero,
+                    onChanged: (valor) {
+                      setState(() {
+                        genero = valor!;
+                      });
+                    },
                   ),
+                  Text("Feminino"),
                 ],
               ),
 
-              DropdownButton<String>(
+              SizedBox(height: 10),
+
+              Text("Nível de Atividade"),
+              DropdownButton<double>(
                 value: atividade,
                 isExpanded: true,
-                items: const [
-                  DropdownMenuItem(value: "sedentario", child: Text("Sedentário")),
-                  DropdownMenuItem(value: "leve", child: Text("Levemente ativo")),
-                  DropdownMenuItem(value: "moderado", child: Text("Moderado")),
-                  DropdownMenuItem(value: "ativo", child: Text("Ativo")),
+                items: [
+                  DropdownMenuItem(value: 1.2, child: Text("Sedentário")),
+                  DropdownMenuItem(value: 1.375, child: Text("Leve")),
+                  DropdownMenuItem(value: 1.55, child: Text("Moderado")),
+                  DropdownMenuItem(value: 1.725, child: Text("Ativo")),
+                  DropdownMenuItem(value: 1.9, child: Text("Muito ativo")),
                 ],
-                onChanged: (value) {
+                onChanged: (valor) {
                   setState(() {
-                    atividade = value!;
+                    atividade = valor!;
                   });
                 },
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
               ElevatedButton(
-                onPressed: calcularTMB,
-                child: const Text("Calcular"),
+                onPressed: calcular,
+                child: Text("Calcular"),
               ),
 
-              const SizedBox(height: 20),
+              SizedBox(height: 20),
 
-              Text("Resultado: ${resultado.toStringAsFixed(2)} kcal"),
+              Container(
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.blue),
+                ),
+                child: Column(
+                  children: [
+                    Text(
+                      "Resultado",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      "${resultado.toStringAsFixed(2)} kcal",
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                ),
+              )
             ],
           ),
         ),
